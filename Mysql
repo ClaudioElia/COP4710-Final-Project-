@@ -1,0 +1,86 @@
+CREATE TABLE Books (
+    book_id INT PRIMARY KEY,
+    title VARCHAR(255),
+    author_id INT,
+    genre_id INT,
+    price DECIMAL(10, 2),
+    quantity_available INT,
+    FOREIGN KEY (author_id) REFERENCES Authors(author_id),
+    FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)
+);
+
+CREATE TABLE Customers (
+    customer_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    address_id INT,
+    username VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    FOREIGN KEY (address_id) REFERENCES Addresses(address_id)
+);
+
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    total_amount DECIMAL(10, 2),
+    order_date DATE,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+);
+
+CREATE TABLE Authors (
+    author_id INT PRIMARY KEY,
+    author_name VARCHAR(255)
+);
+
+CREATE TABLE Genres (
+    genre_id INT PRIMARY KEY,
+    genre_name VARCHAR(100)
+);
+
+CREATE TABLE Addresses (
+    address_id INT PRIMARY KEY,
+    address_details VARCHAR(255)
+);
+
+CREATE TABLE OrderDetails (
+    order_detail_id INT PRIMARY KEY,
+    order_id INT,
+    book_id INT,
+    quantity INT,
+    total_amount DECIMAL(10, 2),
+    order_date DATE,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
+);
+
+
+--Get all books by a specific author
+SELECT b.title, a.author_name, g.genre_name, b.price, b.quantity_available
+FROM Books b
+JOIN Authors a ON b.author_id = a.author_id
+JOIN Genres g ON b.genre_id = g.genre_id
+WHERE a.author_name = 'Author Name';
+
+--Retrieve all orders made by a specific customer
+SELECT o.order_id, o.total_amount, o.order_date, od.book_id, od.quantity
+FROM Orders o
+JOIN OrderDetails od ON o.order_id = od.order_id
+WHERE o.customer_id = [customer_id];
+
+-- List all customers with their addresses
+SELECT c.name, c.email, a.address_details
+FROM Customers c
+JOIN Addresses a ON c.address_id = a.address_id;
+
+--Retrieve the total sales per genre
+SELECT g.genre_name, SUM(od.total_amount) AS total_sales
+FROM OrderDetails od
+JOIN Books b ON od.book_id = b.book_id
+JOIN Genres g ON b.genre_id = g.genre_id
+GROUP BY g.genre_name;
+
+-- Get the authors along with the total number of books they've written
+SELECT a.author_name, COUNT(b.book_id) AS total_books
+FROM Authors a
+LEFT JOIN Books b ON a.author_id = b.author_id
+GROUP BY a.author_name;
