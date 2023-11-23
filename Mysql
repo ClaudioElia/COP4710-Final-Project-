@@ -84,3 +84,78 @@ SELECT a.author_name, COUNT(b.book_id) AS total_books
 FROM Authors a
 LEFT JOIN Books b ON a.author_id = b.author_id
 GROUP BY a.author_name;
+
+--Updating records.
+UPDATE Customers SET email = ? WHERE customer_id = ?
+
+--This is for Java
+public static void updateCustomerEmail(Connection connection, int customerId, String newEmail) {
+    try {
+        String query = "UPDATE Customers SET email = ? WHERE customer_id = ?";
+        
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, newEmail);
+        statement.setInt(2, customerId);
+
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected > 0) {
+            System.out.println("Email updated successfully for customer ID: " + customerId);
+        } else {
+            System.out.println("Customer not found or email update failed.");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+--inserting records.
+INSERT INTO Books (title, author_id, genre_id, price, quantity_available) VALUES (?, ?, ?, ?, ?)
+
+Java 
+public static void insertNewBook(Connection connection, String title, int authorId, int genreId, double price, int quantity) {
+    try {
+        String query = "INSERT INTO Books (title, author_id, genre_id, price, quantity_available) VALUES (?, ?, ?, ?, ?)";
+        
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, title);
+        statement.setInt(2, authorId);
+        statement.setInt(3, genreId);
+        statement.setDouble(4, price);
+        statement.setInt(5, quantity);
+
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected > 0) {
+            System.out.println("New book inserted successfully: " + title);
+        } else {
+            System.out.println("Failed to insert a new book.");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+--deleting records
+INSERT INTO Books (title, author_id, genre_id, price, quantity_available) VALUES (?, ?, ?, ?, ?)
+
+Java
+public static void deleteOrder(Connection connection, int orderId) {
+    try {
+        String query = "DELETE FROM Orders WHERE order_id = ?";
+        
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setInt(1, orderId);
+
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected > 0) {
+            System.out.println("Order deleted successfully: " + orderId);
+        } else {
+            System.out.println("Order not found or deletion failed.");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
